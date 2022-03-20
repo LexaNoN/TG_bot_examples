@@ -1,9 +1,11 @@
 from uuid import uuid4
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 import config
 import json
 from fpdf import FPDF
 import os
+from random import randint
 
 json_base = {}
 
@@ -86,7 +88,7 @@ def createPDF(list, id):
         pdf.cell(200, 10, txt="Ответ номер " + str(i + 1) + ": " + j, ln=i + 2, align='C')
     pdf.output(str(id) + ".pdf", "F")
 
-
+# 11x8
 def showAll(update, context):
     update.message.reply_text(str(json_base))
 
@@ -96,10 +98,25 @@ def quiz(update, context):
     json_base[update.message.chat.id]["quiz1"] = {}
     update.message.reply_text("Введите первый ответ!")
 
+def test_generate():
+    i = randint(1, 100)
+    if 0 <= i <= 50:
+        return " "
+    elif 70 <= i <= 90:
+        return "🌳"
+    elif 91 <= i <= 100:
+        return "🍏"
+    return " "
 
 def test(update, context):
-    context.bot.send_document(chat_id=update.message.chat.id, document=open('666147669.pdf', 'rb'),
-                              filename="answers.pdf")
+    x = []
+    axle_x = 8
+    axle_y = 11
+    for v in range(axle_y):
+        x.append([])
+        for b in range(axle_x):
+            x[v].append(InlineKeyboardButton(test_generate(), callback_data=(str(v) + str(b))))
+    update.message.reply_text("123", reply_markup=InlineKeyboardMarkup(x))
 
 
 if __name__ == '__main__':
